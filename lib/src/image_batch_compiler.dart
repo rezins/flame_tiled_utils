@@ -22,41 +22,25 @@ class ImageBatchCompiler {
     layerNames ??= [];
     paint ??= Paint();
 
-    _unlistedLayers(tileMap, layerNames).forEach((element) {
-      element.visible = false;
-    });
-    for (var rl in tileMap.renderableLayers) {
-      rl.refreshCache();
-    }
-
     final recorder = PictureRecorder();
     final canvas = Canvas(recorder);
-    tileMap.render(canvas);
-    final picture = recorder.endRecording();
 
-    _unlistedLayers(tileMap, layerNames).forEach((element) {
-      element.visible = true;
-    });
+    final layerNameSet = layerNames.toSet();
     for (final rl in tileMap.renderableLayers) {
-      rl.refreshCache();
+      if (layerNameSet.contains(rl.layer.name)) {
+        rl.render(canvas, null);
+      }
     }
 
-    final image = picture.toImageSync(tileMap.map.width * tileMap.map.tileWidth,
-        tileMap.map.height * tileMap.map.tileHeight);
+    final picture = recorder.endRecording();
+
+    final image = picture.toImageSync(
+      tileMap.map.width * tileMap.map.tileWidth,
+      tileMap.map.height * tileMap.map.tileHeight,
+    );
     picture.dispose();
 
     return _ImageComponent(image, paint);
-  }
-
-  static List<Layer> _unlistedLayers(
-      RenderableTiledMap tileMap, List<String> layerNames) {
-    final unlisted = <Layer>[];
-    for (final layer in tileMap.map.layers) {
-      if (!layerNames.contains(layer.name)) {
-        unlisted.add(layer);
-      }
-    }
-    return unlisted;
   }
 }
 
