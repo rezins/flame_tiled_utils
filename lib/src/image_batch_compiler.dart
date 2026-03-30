@@ -18,6 +18,7 @@ class ImageBatchCompiler {
     required RenderableTiledMap tileMap,
     List<String>? layerNames,
     Paint? paint,
+    Vector2? destTileSize,
   }) {
     layerNames ??= [];
     paint ??= Paint();
@@ -34,9 +35,11 @@ class ImageBatchCompiler {
 
     final picture = recorder.endRecording();
 
+    final tw = destTileSize?.x.toInt() ?? tileMap.map.tileWidth;
+    final th = destTileSize?.y.toInt() ?? tileMap.map.tileHeight;
     final image = picture.toImageSync(
-      tileMap.map.width * tileMap.map.tileWidth,
-      tileMap.map.height * tileMap.map.tileHeight,
+      tileMap.map.width * tw,
+      tileMap.map.height * th,
     );
     picture.dispose();
 
