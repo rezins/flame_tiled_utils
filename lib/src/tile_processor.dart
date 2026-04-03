@@ -64,6 +64,16 @@ class TileProcessor {
     _imageCache.clear();
   }
 
+  /// Clears cache and disposes all GPU textures held by the image cache.
+  static void disposeCacheImages() {
+    for (final image in _imageCache.values) {
+      image.dispose();
+    }
+    _spriteAnimationCache.clear();
+    _spriteCache.clear();
+    _imageCache.clear();
+  }
+
   Future<Sprite> getSprite({int tileId = -1, bool useRelativePath = false, double setOffsetCorrection = 0.0001}) async {
     if (tileId == -1) {
       tileId = tile.localId;
